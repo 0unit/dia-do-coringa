@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<title>Dia do Curinga</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="ddc.js"></script>
+</head>
+
+<header> 
+<h1>Calend&aacute;rio do Curinga</h1>
+
+<esquerda>O que é:<br />Baseado no calendário fictício do Livro Dia do Curinga de Jostein Garrnder, um conversor funcional entre o calendário Gregoriano de o Calendário de Frode. Que chamo de calendário do Curinga, pela sua principal data ser o Dia do Curinga.</esquerda> 
+
+<h2>
+<script type="text/javascript">
+data = new Date();
+dia = data.getDate();
+mes = data.getMonth();
+ano = data.getFullYear();
+
+ImprimeCalendarioFrode(dia,mes+1,ano);
+var tet = FrodeSimples(dia,mes+1,ano);
+document.writeln(tet);
+</script>
+</h2>
+
+</header>
+
+<footer>Todos os direitos reservados <a href="http://twitter.com/0unit">@0unit</a> - <script type="text/javascript">
+data = new Date();
+ano = data.getFullYear();
+document.write(ano);
+</script> <small>Esse site foi feito para ser feio mesmo, se chama preça</small></footer>
+
+</html>

@@ -1,0 +1,471 @@
+{\rtf1\ansi\deff0\deftab480{\fonttbl{\f0\fnil Courier New;}{\f1\fnil\fcharset0 Courier New;}}
+{\colortbl ;\red0\green0\blue0;\red255\green255\blue255;\red0\green0\blue255;\red0\green0\blue128;\red128\green0\blue255;\red0\green128\blue0;\red255\green128\blue0;}
+{\*\generator Msftedit 5.41.15.1515;}\viewkind4\uc1\pard\cf1\highlight2\lang1046\f0\fs20\par
+\b\f1 Dia do Curinga\par
+\par
+\cf3\b0\f0 Um conversor para o calendario ficticio do livro de Jostein \par
+Gaarder "O Dia do Curinga". Tendo como base um baralho.\par
+                \par
+    364 dias representados cada um por uma carta\par
+    52 semanas, uma para cada carta\par
+    13 meses, um para cada numero\par
+    28 dias em cada mes\par
+    O dia 365 \f1\'e9 o um dia extra o dia do curinga\par
+    A cada quatro anos a dois dias extras o Duplo dia do curinga\par
+    \par
+    A contagem dos anos come\'e7a em 1790, o dia em 17, e o mes em janeito a data\par
+    em que o personagem chegou na ilha.\par
+    A contagem de semanas e dias come\'e7a ent\'e7ao em 17/1/1790 \par
+    \par
+    !N\'e3o est\'e1 no livro \'e9 coisa da minha cabe\'e7a e leva em conta o hemisf\'e9rio sul!\par
+    As esta\'e7\'f5es do ano s\'e3o marcados por diferentes naipes assim fornecendo os\par
+    naipes dos meses.\par
+    * outono \'e9 paus;\par
+    * ver\'e3o e ouros;\par
+    * primavera \'e9 copas;\par
+    * inverno \'e9 espadas;\par
+    \par
+    A primeira semana do ano 1790 \'e9 semana de \'e1s de ouros\par
+    A ordem dos naipes \'e9 ouros -> paus -> espadas ->copas\par
+    \par
+    \'c1s de espadas d\'e1 azar :)\cf1\f0\par
+\par
+\f1 Para escrever mais r\'e1pido estou fazendo \par
+uso de sertar abrevia\'e7\'f5es.\f0\par
+\par
+\b\f1 DG = Data Gregoriana\par
+DC = Data Curinga\par
+\par
+|O| = carta de ouros\par
+|C| = carta de copas\par
+|P| = carta de paus\par
+|E| = carta de espadas\par
+|Jo| = curinga\par
+|Dj| = duplo curinga\par
+\b0\f0\par
+\f1 ----------------------------------------------------------\f0\par
+\b\f1 Naipes\f0\par
+\b0\f1\par
+Os naipes seguem da seguinte forma:\par
+0 = |o| \par
+1 = |p|\par
+2 = |c|\par
+3 = |e|\f0\par
+\par
+\f1 assim fica mias f\'e1cil fazer o retorno da forma que pode\par
+ser reimplementado mais facilmente se necess\'e1rio.\par
+\par
+----------------------------------------------------------\par
+\b Cartas\b0\par
+\par
+As cartas seguem de \'c1s a Rei sendo a 14\'aa o curinga\f0\par
+\par
+\f1 ----------------------------------------------------------\f0\par
+\b\f1 Construtor\b0\f0\par
+\par
+DDCuringa\cf4\b ::\cf1\b0 DDCuringa\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  dia\cf4\b ,\cf1\b0  \cf5 unsigned\cf1  \cf5 int\cf1  mes\cf4\b ,\cf1\b0  \cf5 unsigned\cf1  \cf5 int\cf1  ano\cf4\b )\{\cf1\b0\par
+\tab setAno\cf4\b (\cf1\b0 ano\cf4\b );\cf1\b0\par
+\tab setDia\cf4\b (\cf1\b0 dia\cf4\b );\cf1\b0\par
+\tab setMes\cf4\b (\cf1\b0 mes\cf4\b );\cf1\b0\par
+\tab setNumeroDias\cf4\b (\cf1\b0 getDia\cf4\b (),\cf1\b0 getMes\cf4\b (),\cf1\b0 getAno\cf4\b ());\cf1\b0\par
+\tab\cf4\b\}\cf1\b0\par
+\par
+\f1 ----------------------------------------------------------\cf6\f0\par
+\cf1\b\f1 rotacionaAno()\par
+\b0\par
+Recebe o ano DG e faz a conver\'e3o para DC, pode-se escolhar \par
+qualquer ano para o inicial, mas deve-se levar em conta que\par
+o dia 1 de mar\'e7o do ano escolhido seja um domingo. De forma \par
+que o calend\'e1rio DC criado seja sincronizado com os dias da \par
+semana a n\'e3o ser que essa seja a id\'e9ia.\cf6\f0\par
+\par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 rotacionaAno \cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  ano\cf4\b )\{\cf1\b0  \cf6 //ANO NORMAL\par
+\cf1          ano \cf4\b =\cf1\b0  ano \cf4\b -\cf1\b0  \cf7 1789\cf4\b ;\cf1\b0  \cf6\f1 //1970 \'e9 o ano que frode chegou na ilha\f0\par
+\cf1          \cf3\b return\cf1\b0  ano\cf4\b ;\cf1\b0\tab    \cf6\f1 //mas a data na fun\'e7\'e3o \'e9 1789 por que um ano que come\'e7a no domingo.\f0\par
+\cf1          \cf4\b\}\cf1\b0\par
+         \par
+\f1 ----------------------------------------------------------\par
+\b rotacionaData()\b0\par
+\par
+Recede dia corrido fornecido pelo getNumeroDia() e pelo ano\par
+DG. Internamente est\'e1 setado para que o \'faltimo dia do ano\par
+seja 28 de fevereiro e 29 de fevereiro em anos bissextos.\par
+\par
+Se \'e9 de seu interece basta alterar \cf7\f0 60\cf1\f1  e \cf7\f0 305\cf1\f1  bastando manter\par
+o total em 365.\f0\par
+\par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 rotacionaData\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  dia\cf4\b ,\cf1\b0  \cf5 unsigned\cf1  \cf5 int\cf1  ano\cf4\b )\{\cf1\b0  \cf6 //ANO E DIA NORMAIS\par
+\cf1\tab\tab\tab\cf3\b if\cf4 (\cf1\b0 dia \cf4\b >\cf1\b0  \cf7 60\cf4\b )\cf1\b0  dia \cf4\b =\cf1\b0  dia \cf4\b -\cf1\b0  \cf7 60\cf4\b ;\cf1\b0  \cf6 //frode chegou na ilha no dia 17 de janeiro\par
+\cf1\tab\tab\tab\cf3\b else\cf1\b0  dia \cf4\b =\cf1\b0  dia \cf4\b +\cf1\b0  \cf7 305\cf4\b ;\cf1\b0\par
+\tab\tab\tab\cf3\b if\cf4 (\cf1\b0 eBissexto\cf4\b (\cf1\b0 ano\cf4\b -\cf7\b0 1\cf4\b ))\cf1\b0  dia\cf4\b ++;\cf1\b0  \cf6 //se o ano anterior foi bissexto\par
+\cf1\tab\tab\tab\cf3\b return\cf1\b0  dia\cf4\b ;\cf1\b0\par
+\tab\tab\tab\cf4\b\}\cf1\b0\tab\tab  \par
+\par
+\f1 ----------------------------------------------------------\par
+\b eBissexto()\b0\par
+\par
+Retorno se \'e9 um ano bissexto ou n\'e3o por que interfere \par
+muito as outras estruturas da classe.\f0\par
+\tab\tab\tab\par
+\cf5 bool\cf1  DDCuringa\cf4\b ::\cf1\b0 eBissexto\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  ano\cf4\b )\{\cf1\b0\par
+\tab\cf3\b if\cf1\b0  \cf4\b ((!(\cf1\b0 ano\cf4\b %\cf7\b0 4\cf4\b ))||((!(\cf1\b0 ano\cf4\b %\cf7\b0 100\cf4\b ))&&(!(\cf1\b0 ano\cf4\b &\cf7\b0 400\cf4\b ))))\cf1\b0  \cf3\b return\cf1\b0  \cf3\b true\cf4 ;\cf1\b0  \cf6 //eh ano bissexto\par
+\cf1     \cf3\b else\cf1\b0  \cf3\b return\cf1\b0  \cf3\b false\cf4 ;\cf1\b0\par
+\tab\cf4\b\}\cf1\b0\par
+    \tab\par
+\f1 ----------------------------------------------------------\par
+\b setDia()\b0\par
+\par
+Seta o dia DG em ddia e roda o setNumeroDias() para ter o\par
+total de dias corridos.\cf6\f0\par
+\par
+\cf5 void\cf1  DDCuringa\cf4\b ::\cf1\b0 setDia\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  dia\cf4\b )\{\cf1\b0\par
+\tab\cf3\b if\cf4 ((\cf1\b0 dia \cf4\b >\cf1\b0  \cf7 0\cf4\b )&&(\cf1\b0 dia \cf4\b <\cf1\b0  \cf7 32\cf4\b ))\cf1\b0  ddia \cf4\b =\cf1\b0  dia\cf4\b ;\cf1\b0\par
+\tab setNumeroDias\cf4\b (\cf1\b0 ddia\cf4\b ,\cf1\b0 dmes\cf4\b ,\cf1\b0 dano\cf4\b );\cf1\b0\par
+\cf4\b\}\cf1\b0\par
+\par
+\f1 ----------------------------------------------------------\par
+\b getDia()\b0\par
+\par
+Retorna o dia DG\f0\par
+\par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 getDia\cf4\b ()\{\cf1\b0  \par
+         \cf3\b return\cf1\b0  ddia\cf4\b ;\cf1\b0  \par
+         \cf4\b\}\cf1\b0\par
+\par
+\f1 ----------------------------------------------------------\par
+\b getNaipeDia()\b0\par
+\par
+Retorna o Naipe do dia sequindo os principios dos naipes.\par
+Dentro da fun\'e7\'e3o rotaciona da a data novamente por causa\par
+do metodos set() estar acess\'edvel aos usu\'e1rios.\f0\par
+\par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 getNaipeDia\cf4\b ()\{\cf1\b0\par
+       naipeDia\cf4\b (\cf1\b0 rotacionaData\cf4\b (\cf1\b0 getNumeroDias\cf4\b (),\cf1\b0 getAno\cf4\b ()));\cf1\b0\par
+       \cf3\b return\cf1\b0  ndia\cf4\b ;\cf1\b0  \par
+       \cf4\b\}\cf1\b0\par
+\par
+\f1 ----------------------------------------------------------\par
+\b getCartaDia()\b0\par
+\par
+Retorna a Carta do dia seguindo os principios das cartas.\par
+Dentro da fun\'e7\'e3o rotaciona da a data novamente por causa\par
+do metodos set() estar acess\'edvel aos usu\'e1rios.\f0\par
+\par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 getCartaDia\cf4\b ()\{\cf1\b0\par
+       cartaDia\cf4\b (\cf1\b0 rotacionaData\cf4\b (\cf1\b0 getNumeroDias\cf4\b (),\cf1\b0 getAno\cf4\b ()));\cf1\b0\par
+       \cf3\b return\cf1\b0  cdia\cf4\b ;\cf1\b0  \par
+       \cf4\b\}\cf1\b0\par
+\par
+\b\f1 ----------------------------------------------------------\par
+cartaDia()\par
+\par
+\b0 Usa dia DG para retornar a carta, retornando 14 para o dia\par
+curinga.\f0\par
+\par
+\cf5 void\cf1  DDCuringa\cf4\b ::\cf1\b0 cartaDia\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  dia\cf4\b )\{\cf1\b0  \cf6 // dia decrementando por causa da natureza da array de char\par
+\cf1\tab\cf3\b if\cf4 (\cf1\b0 dia \cf4\b <\cf1\b0  \cf7 365\cf4\b )\{\cf1\b0\par
+            cdia \cf4\b =\cf1\b0  \cf4\b (--\cf1\b0 dia\cf4\b )\cf1\b0  \cf4\b %\cf1\b0  \cf7 13\cf4\b ;\cf1\b0  \par
+            \cf4\b\}\cf1\b0\par
+\tab\cf3\b else\cf1\b0  \cf4\b\{\cf1\b0\par
+         cdia \cf4\b =\cf1\b0  \cf7 14\cf4\b ;\cf1\b0\par
+         \cf4\b\}\cf1\b0\par
+\cf4\b\}\cf1\b0\par
+\par
+\b\f1 ----------------------------------------------------------\par
+naipeDia()\par
+\par
+\b0 Usa dia DG para retornar o naipe, retornando 14 para o dia\par
+curinga e 15 para o curinga duplo dos anos bissextos.\f0\par
+\par
+\cf5 void\cf1  DDCuringa\cf4\b ::\cf1\b0 naipeDia\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  dia\cf4\b )\{\cf1\b0  \par
+\tab\cf3\b if\cf4 (\cf1\b0 dia \cf4\b <\cf1\b0  \cf7 365\cf4\b )\cf1\b0  ndia \cf4\b =\cf1\b0  \cf4\b ((--\cf1\b0 dia \cf4\b /\cf1\b0  \cf7 13\cf4\b ))\cf1\b0  \cf4\b %\cf1\b0  \cf7 4\cf4\b ;\cf1\b0  \par
+\tab\cf3\b else\cf1\b0  \cf3\b if\cf4 (\cf1\b0 dia \cf4\b ==\cf1\b0  \cf7 365\cf4\b )\cf1\b0  ndia \cf4\b =\cf1\b0  \cf7 14\cf4\b ;\cf1\b0\par
+\tab\cf3\b else\cf1\b0  \cf3\b if\cf4 (\cf1\b0 dia \cf4\b ==\cf1\b0  \cf7 366\cf4\b )\cf1\b0  ndia \cf4\b =\cf1\b0  \cf7 15\cf4\b ;\cf1\b0\par
+\cf4\b\}\cf6\b0 // dia decrementando por causa da natureza da array de char\par
+\cf1\par
+\par
+\f1 ----------------------------------------------------------\par
+\b getNaipeSemana()\b0\par
+\par
+Retorna a Carta da semana seguindo os principios dos naipes.\par
+Dentro da fun\'e7\'e3o rotaciona da a data novamente por causa\par
+do metodos set() estar acess\'edvel aos usu\'e1rios.\par
+\cf6\f0\par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 getNaipeSemana\cf4\b ()\{\cf1\b0  \par
+       naipeSemana\cf4\b (\cf1\b0 rotacionaData\cf4\b (\cf1\b0 getNumeroDias\cf4\b (),\cf1\b0 getAno\cf4\b ()));\cf1\b0\par
+       \cf3\b return\cf1\b0  nsemana\cf4\b ;\cf1\b0  \par
+       \cf4\b\}\par
+\cf1\b0\par
+\f1 ----------------------------------------------------------\par
+\b getCartaSemana()\b0\par
+\par
+Retorna a Carta da semana seguindo os principios das cartas.\par
+Dentro da fun\'e7\'e3o rotaciona da a data novamente por causa\par
+do metodos set() estar acess\'edvel aos usu\'e1rios.\f0\par
+       \par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 getCartaSemana\cf4\b ()\{\cf1\b0\par
+       cartaSemana\cf4\b (\cf1\b0 rotacionaData\cf4\b (\cf1\b0 getNumeroDias\cf4\b (),\cf1\b0 getAno\cf4\b ()));\cf1\b0\par
+       \cf3\b return\cf1\b0  csemana\cf4\b ;\cf1\b0  \par
+       \cf4\b\}\cf1\b0\par
+       \par
+\cf5\par
+\cf1\b\f1 ----------------------------------------------------------\par
+cartaSemana()\par
+\par
+\b0 Devolve a carta semana atr\'e1s do c\'e1lculo simples\cf5\f0\par
+\par
+void\cf1  DDCuringa\cf4\b ::\cf1\b0 cartaSemana\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  dia\cf4\b )\{\cf1\b0  \par
+     csemana \cf4\b =\cf1\b0  \cf4\b (\cf1\b0 dia \cf4\b /\cf1\b0  \cf7 7\cf4\b )\cf1\b0  \cf4\b %\cf1\b0  \cf7 13\cf4\b ;\cf1\b0  \par
+     \cf4\b\}\cf1\b0\par
+\par
+\f1 ----------------------------------------------------------\par
+\b naipeSemana()\par
+\par
+\b0 Devolve o naipe da semana\f0\par
+\par
+\cf5 void\cf1  DDCuringa\cf4\b ::\cf1\b0 naipeSemana\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  dia\cf4\b )\{\cf1\b0  \par
+     nsemana \cf4\b =\cf1\b0  \cf4\b ((\cf1\b0 dia \cf4\b /\cf1\b0  \cf7 7\cf4\b )/\cf1\b0  \cf7 13\cf4\b )\cf1\b0  \cf4\b %\cf1\b0  \cf7 4\cf4\b ;\cf1\b0   \par
+     \cf4\b\}\cf1\b0\tab\par
+\par
+\f1 ----------------------------------------------------------\f0\par
+\b\f1 setMes()\b0\par
+\par
+Verifica se o mes DG est\'e1 correto e o armazena\f0\par
+\cf6\tab\par
+\cf5 void\cf1  DDCuringa\cf4\b ::\cf1\b0 setMes\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  mes\cf4\b )\{\cf1\b0  \par
+\tab\cf3\b if\cf4 ((\cf1\b0 mes \cf4\b >\cf1\b0  \cf7 0\cf4\b )&&(\cf1\b0 mes \cf4\b <\cf1\b0  \cf7 13\cf4\b ))\{\cf1\b0\par
+\tab\tab dmes \cf4\b =\cf1\b0  mes\cf4\b ;\cf1\b0  \par
+\tab\cf4\b\}\cf1\b0\par
+\tab setNumeroDias\cf4\b (\cf1\b0 ddia\cf4\b ,\cf1\b0 dmes\cf4\b ,\cf1\b0 dano\cf4\b );\cf1\b0\par
+\cf4\b\}\cf1\b0\par
+\par
+\f1 ----------------------------------------------------------\par
+\b getMes()\par
+\b0\par
+Retorna o mes\f0\par
+\par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 getMes\cf4\b ()\{\cf1\b0  \par
+         \cf3\b return\cf1\b0  dmes\cf4\b ;\cf1\b0  \par
+         \cf4\b\}\cf1\b0\par
+\par
+\f1 ----------------------------------------------------------\par
+\b getNaipeMes()\b0\par
+\par
+Retorna a Carta do mes seguindo os principios dos naipes.\par
+Dentro da fun\'e7\'e3o rotaciona da a data novamente por causa\par
+do metodos set() estar acess\'edvel aos usu\'e1rios.\f0\par
+         \par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 getNaipeMes\cf4\b ()\{\cf1\b0\par
+       naipeMes\cf4\b ((\cf1\b0 getNumeroDias\cf4\b ()),\cf1\b0 getAno\cf4\b ());\cf1\b0       \par
+       \cf3\b return\cf1\b0  nmes\cf4\b ;\cf1\b0  \par
+       \cf4\b\}\par
+\cf1\b0\par
+\f1 ----------------------------------------------------------\par
+\b getCartaMes()\b0\par
+\par
+Retorna a Carta do mes seguindo os principios das cartas.\par
+Dentro da fun\'e7\'e3o rotaciona da a data novamente por causa\par
+do metodos set() estar acess\'edvel aos usu\'e1rios.\par
+\f0        \par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 getCartaMes\cf4\b ()\{\cf1\b0  \par
+       cartaMes\cf4\b (\cf1\b0 rotacionaData\cf4\b (\cf1\b0 getNumeroDias\cf4\b (),\cf1\b0 getAno\cf4\b ()));\cf1\b0\par
+       \cf3\b return\cf1\b0  cmes\cf4\b ;\cf1\b0  \par
+       \cf4\b\}\cf1\b0\par
+\par
+\b\f1 ----------------------------------------------------------\par
+caraMes()\par
+\par
+\b0 Usa mes DG para retornar a carta\f0\par
+       \par
+\cf5 void\cf1  DDCuringa\cf4\b ::\cf1\b0 cartaMes\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  dia\cf4\b )\{\cf1\b0  \cf6 //segue o sistema de mes de 28 dias de frode\par
+\cf1     \cf5 unsigned\cf1  numero \cf4\b =\cf1\b0  \cf7 0\cf4\b ;\cf1\b0\par
+\tab dia \cf4\b =\cf1\b0  getNumeroDias\cf4\b ();\cf1\b0\par
+\tab cmes \cf4\b =\cf1\b0  \cf4\b (--\cf1\b0 dia \cf4\b /\cf1\b0  \cf7 28\cf4\b )\cf1\b0  \cf4\b %\cf1\b0  \cf7 13\cf4\b ;\cf1\b0  \cf6 // dia decrementando por causa da natureza da array de char\par
+\cf1\tab\cf4\b\}\cf1\b0\par
+\par
+\f1 ----------------------------------------------------------\par
+\b naipeMes()\b0\par
+\par
+Retorna o naipe de acordo com as esta\'e7\'f5es do ano para \par
+fazer parte do mes. Mas deve ser alterado deacordo com o \par
+hemisf\'e9io.\par
+\f0\par
+\f1 O dia \'e9 a contagem do getNumeroDiasde() dia corridos DG\par
+sem rotacionaData(). E o ano tamb\'e9m \'e9 sem nenhuma core\'e7\'e3o. \par
+Isso tem por objetivo tornar mais f\'e1cil a atualiza\'e7\'e3o, para \par
+outros tipos de vis\'e3o.\f0\par
+\tab\par
+\cf5 void\cf1  DDCuringa\cf4\b ::\cf1\b0 naipeMes\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  dia\cf4\b ,\cf1\b0  \cf5 unsigned\cf1  \cf5 int\cf1  ano\cf4\b )\{\cf1\b0  \cf6 //DIA NORMAL SEM CONVERSAO\par
+\cf1\tab\cf5 unsigned\cf1  \cf5 int\cf1  biss \cf4\b =\cf1\b0  \cf7 0\cf4\b ;\cf1\b0\tab\cf6 //marcador de ano bissexto\par
+\cf1\tab\cf5 unsigned\cf1  \cf5 int\cf1  figura \cf4\b =\cf1\b0  \cf7 0\cf4\b\f1 ;\cf1\b0\f0\tab\par
+\tab\cf3\b if\cf4 (\cf1\b0 eBissexto\cf4\b (\cf1\b0 ano\cf4\b -\cf7\b0 1\cf4\b ))\cf1\b0  biss \cf4\b =\cf1\b0  \cf7 1\cf4\b ;\cf1\b0       \cf6 //ano - 1 se anoterio e bissexto\par
+\cf1\tab\cf3\b if\cf1\b0  \cf4\b (\cf1\b0 dia \cf4\b <=\cf1\b0  \cf4\b (\cf7\b0 62\cf4\b -\cf1\b0 biss\cf4\b ))\cf1\b0  figura \cf4\b =\cf1\b0  \cf7 1\cf4\b ;\cf1\b0        \cf6\f1 //Ver\'e3o 22/12 339 paus 1\f0\par
+\cf1     \cf3\b else\cf1\b0  \cf3\b if\cf1\b0  \cf4\b (\cf1\b0 dia \cf4\b <=\cf1\b0  \cf4\b (\cf7\b0 154\cf4\b -\cf1\b0 biss\cf4\b ))\cf1\b0  figura \cf4\b =\cf1\b0  \cf7 2\cf4\b ;\cf1\b0  \cf6 //Outono 21/3 63 copas 2\par
+\cf1     \cf3\b else\cf1\b0  \cf3\b if\cf1\b0  \cf4\b (\cf1\b0 dia \cf4\b <=\cf1\b0  \cf4\b (\cf7\b0 247\cf4\b -\cf1\b0 biss\cf4\b ))\cf1\b0  figura \cf4\b =\cf1\b0  \cf7 3\cf4\b ;\cf1\b0  \cf6 //Inverno 22/6 155 espadas 3\par
+\cf1     \cf3\b else\cf1\b0  \cf3\b if\cf1\b0  \cf4\b (\cf1\b0 dia \cf4\b <=\cf1\b0  \cf4\b (\cf7\b0 338\cf4\b -\cf1\b0 biss\cf4\b ))\cf1\b0  figura \cf4\b =\cf1\b0  \cf7 0\cf4\b ;\cf1\b0  \cf6 //Primavera 23/9 248 ouros 0\par
+\cf1     \cf3\b else\cf1\b0  \cf3\b if\cf1\b0  \cf4\b (\cf1\b0 dia \cf4\b <=\cf1\b0  \cf4\b (\cf7\b0 367\cf4\b -\cf1\b0 biss\cf4\b ))\cf1\b0  figura \cf4\b =\cf1\b0   \cf7 1\cf4\b ;\cf1\b0  \cf6\f1 //Ver\'e3o 22/12 339 paus 1\f0\par
+\cf1\tab nmes \cf4\b =\cf1\b0  figura\cf4\b ;\cf1\b0\par
+    \cf4\b\}\cf1\b0\par
+\par
+\f1 ----------------------------------------------------------\par
+\b setAno()\b0\par
+\par
+Faz uma verifica\'e7\'e3o r\'e1pida de ano para evitar erros nos \par
+c\'e1lculos da classe. Uso 1789 em toda a classe se quizer \par
+usar outro ano confira a repeti\'e7\'e3o do mesmo.\cf6\f0\par
+\par
+\cf5 void\cf1  DDCuringa\cf4\b ::\cf1\b0 setAno\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  ano\cf4\b )\{\cf1\b0  \par
+\tab\cf3\b if\cf4 ((\cf1\b0 ano \cf4\b >\cf1\b0  \cf7\f1 1789\cf4\b\f0 )&&(\cf1\b0 ano \cf4\b <=\cf1\b0  \cf7 9999\cf4\b ))\cf1\b0  dano \cf4\b =\cf1\b0  ano\cf4\b ;\cf1\b0\par
+\tab setNumeroDias\cf4\b (\cf1\b0 ddia\cf4\b ,\cf1\b0 dmes\cf4\b ,\cf1\b0 dano\cf4\b );\cf1\b0\par
+\cf4\b\}\cf1\b0\par
+\par
+\f1 ----------------------------------------------------------\par
+\b getAno()\b0\par
+\par
+Retorna o ano DG.\f0\par
+\par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 getAno\cf4\b ()\{\cf1\b0  \par
+         \cf3\b return\cf1\b0  dano\cf4\b ;\cf1\b0  \par
+         \cf4\b\}\cf1\b0\par
+\f1 ----------------------------------------------------------\par
+\b getNaipeAno()\b0\par
+\par
+Retorna a Carta do ano seguindo os principios dos naipes.\par
+\f0          \par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 getNaipeAno\cf4\b ()\{\cf1\b0  \par
+       naipeAno\cf4\b (\cf1\b0 getAno\cf4\b ());\cf1\b0\par
+       \cf3\b return\cf1\b0  nano\cf4\b ;\cf1\b0  \par
+       \cf4\b\}\cf1\b0\par
+\par
+\f1 ----------------------------------------------------------\par
+\b getNaipeAno()\b0\par
+\par
+Retorna a Carta do ano seguindo os principios das cartas.\f0\par
+\par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 getCartaAno\cf4\b ()\{\cf1\b0\par
+       cartaAno\cf4\b (\cf1\b0 getAno\cf4\b ());\cf1\b0\par
+       \cf3\b return\cf1\b0  cano\cf4\b ;\cf1\b0  \par
+       \cf4\b\}\par
+\par
+\cf1\f1 ----------------------------------------------------------\par
+cartaAno()\par
+\par
+\b0 Usa ano DG para retornar a carta\f0\par
+       \par
+\cf5 void\cf1  DDCuringa\cf4\b ::\cf1\b0 cartaAno\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  ano\cf4\b )\{\cf1\b0  \cf6 //ANO NORMAL\par
+\cf1\tab\tab ano \cf4\b =\cf1\b0  rotacionaAno\cf4\b (\cf1\b0 ano\cf4\b );\cf1\b0\par
+\tab\tab cano \cf4\b =\cf1\b0  ano \cf4\b %\cf1\b0  \cf7 13\cf4\b ;\cf1\b0\par
+\tab\tab\cf4\b\}\cf1\b0\par
+\par
+\f1 ----------------------------------------------------------\f0\par
+\b\f1 naipeAno()\par
+\par
+\b0 Devolver o naipe do Ano, recebendo o ano DG\f0\par
+\tab\tab\par
+\cf5 void\cf1  DDCuringa\cf4\b ::\cf1\b0 naipeAno\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  ano\cf4\b )\{\cf1\b0  \cf6 //ANO NORMAL\par
+\cf1\tab\tab ano \cf4\b =\cf1\b0  rotacionaAno\cf4\b (\cf1\b0 ano\cf4\b );\cf1\b0\par
+\tab\tab nano \cf4\b =\cf1\b0  \cf4\b (\cf1\b0 ano \cf4\b /\cf1\b0  \cf7 13\cf4\b )\cf1\b0  \cf4\b %\cf1\b0  \cf7 4\cf4\b ;\cf1\b0\par
+\tab\tab\cf4\b\}\cf1\b0\par
+\par
+\f1 ----------------------------------------------------------\f0\tab\tab\par
+\b\f1 getNumeroDias()\par
+\b0\par
+Devolve o numero de dias corridos DG.\par
+\cf6\f0\par
+\cf5 unsigned\cf1  \cf5 int\cf1  DDCuringa\cf4\b ::\cf1\b0 getNumeroDias\cf4\b ()\{\cf1\b0  \par
+         \cf3\b return\cf1\b0  numdia\cf4\b ;\cf1\b0  \par
+         \cf4\b\}\cf1\b0\par
+\f1\par
+----------------------------------------------------------\par
+\b setNumeroDias()\b0\par
+\par
+A fun\'e7\'e3o de objeto setNumeroDias, que \'e9 repetida v\'e1rias \par
+vezes pela classe tem como fun\'e7\'e3o fazer soma de dias para \par
+ter o total de dias corridos. Cada vez que uma v\'e1riavel da\par
+DG \'e9 alterado, \'e9 necess\'e1rio refazer o calculo com essa \par
+fun\'e7\'e3o.\f0\par
+\par
+\f1 Como entrada deve ser dia mes e ano DG, faz uma pequena\par
+valida\'e7\'e3o para evitar datas erradas.\f0        \par
+  \tab\tab\par
+\cf5 void\cf1  DDCuringa\cf4\b ::\cf1\b0 setNumeroDias\cf4\b (\cf5\b0 unsigned\cf1  \cf5 int\cf1  dia\cf4\b ,\cf5\b0 unsigned\cf1  \cf5 int\cf1  mes\cf4\b ,\cf5\b0 unsigned\cf1  \cf5 int\cf1  ano\cf4\b )\{\cf1\b0  \cf6 //DIA, MES e ANO NORMAIS\par
+\cf1     \cf5 unsigned\cf1  \cf5 int\cf1  contador \cf4\b =\cf1\b0  \cf7 0\cf4\b ;\cf1\b0\par
+    \cf5 unsigned\cf1  \cf5 int\cf1  biss \cf4\b =\cf1\b0  \cf7 0\cf4\b ;\cf1\b0\par
+    \par
+    \cf3\b if\cf1\b0  \cf4\b (\cf1\b0 eBissexto\cf4\b (\cf1\b0 ano\cf4\b ))\cf1\b0  biss \cf4\b =\cf1\b0  \cf7 1\cf4\b ;\cf1\b0\par
+\par
+    \cf3\b if\cf1\b0  \cf4\b (\cf1\b0 dia\cf4\b <\cf7\b0 1\cf4\b )\{\cf1\b0  \cf6\f1 // Verifica se dia n\'e3o \'e9 negativo\f0\par
+\cf1\tab\tab ddia \cf4\b =\cf1\b0  \cf7 1\cf4\b ;\cf1\b0\par
+\tab\tab\cf4\b\}\cf1\b0\par
+    \par
+    \cf3\b if\cf1\b0  \cf4\b ((\cf1\b0 mes\cf4\b <\cf7\b0 1\cf4\b )||(\cf1\b0 mes\cf4\b >\cf7\b0 12\cf4\b ))\{\cf1\b0  \cf6\f1 // Veifica se mes est\'e1 correto\f0\par
+\cf1\tab\tab dmes \cf4\b =\cf1\b0  \cf7 1\cf4\b ;\cf1\b0\par
+\tab\tab\cf4\b\}\cf1\b0\par
+\par
+    \cf3\b if\cf1\b0  \cf4\b ((\cf1\b0 ano\cf4\b <\cf7\b0 1789\cf4\b )||(\cf1\b0 ano\cf4\b >\cf7\b0 9999\cf4\b ))\{\cf1\b0  \cf6\f1 //Verifica se o ano esta dentro dos padr\'f5es\f0\par
+\cf1\tab\tab dano \cf4\b =\cf1\b0  \cf7 1789\cf4\b ;\cf1\b0\par
+\tab\tab\cf4\b\}\cf1\b0\par
+\par
+    \cf3\b if\cf1\b0  \cf4\b ((\cf1\b0 mes\cf4\b ==\cf7\b0 1\cf4\b )||(\cf1\b0 mes\cf4\b ==\cf7\b0 3\cf4\b )||(\cf1\b0 mes\cf4\b ==\cf7\b0 5\cf4\b )||(\cf1\b0 mes\cf4\b ==\cf7\b0 7\cf4\b )||(\cf1\b0 mes\cf4\b ==\cf7\b0 8\cf4\b )||(\cf1\b0 mes\cf4\b ==\cf7\b0 10\cf4\b )||(\cf1\b0 mes\cf4\b ==\cf7\b0 12\cf4\b ))\{\cf1\b0\par
+               \cf3\b if\cf1\b0  \cf4\b (\cf1\b0 dia\cf4\b >\cf7\b0 31\cf4\b )\cf1\b0  \tab ddia \cf4\b =\cf1\b0  \cf7 1\cf4\b ;\cf1\b0\par
+    \cf4\b\}\cf1\b0\par
+\par
+    \cf3\b if\cf1\b0  \cf4\b ((\cf1\b0 mes\cf4\b ==\cf7\b0 4\cf4\b )||(\cf1\b0 mes\cf4\b ==\cf7\b0 6\cf4\b )||(\cf1\b0 mes\cf4\b ==\cf7\b0 9\cf4\b )||(\cf1\b0 mes\cf4\b ==\cf7\b0 11\cf4\b ))\{\cf1\b0\par
+               \cf3\b if\cf1\b0  \cf4\b (\cf1\b0 dia\cf4\b >\cf7\b0 30\cf4\b )\cf1\b0  ddia \cf4\b =\cf1\b0  \cf7 1\cf4\b ;\cf1\b0\par
+    \cf4\b\}\cf1\b0\par
+\par
+    \cf3\b if\cf1\b0  \cf4\b (\cf1\b0 mes\cf4\b ==\cf7\b0 2\cf4\b )\{\cf1\b0\par
+               \cf3\b if\cf1\b0  \cf4\b (\cf1\b0 biss \cf4\b !=\cf1\b0  \cf7 0\cf4\b )\{\cf1\b0\par
+                    \cf3\b if\cf1\b0  \cf4\b (\cf1\b0 dia\cf4\b >\cf7\b0 29\cf4\b )\cf1\b0  ddia \cf4\b =\cf1\b0  \cf7 1\cf4\b ;\cf1\b0\par
+               \cf4\b\}\cf1\b0\par
+               \cf3\b else\cf4\{\cf1\b0\par
+                    \cf3\b if\cf1\b0  \cf4\b (\cf1\b0 dia\cf4\b >\cf7\b0 28\cf4\b )\cf1\b0  ddia \cf4\b =\cf1\b0  \cf7 1\cf4\b ;\cf1\b0\par
+               \cf4\b\}\cf1\b0\par
+    \cf4\b\}\cf1\b0\par
+\par
+    \cf3\b switch\cf1\b0  \cf4\b (\cf1\b0 mes\cf4\b )\{\cf1\b0\par
+    \cf6 /* Simplismente a cada mes soma-se os dias do mes \par
+    anterior, mais os dia enviados pelo ''dia'' */\cf1\par
+           \cf3\b case\cf1\b0  \cf7 1\cf4\b :\cf1\b0  \cf6 //31\par
+\cf1                 contador \cf4\b =\cf1\b0  dia\cf4\b ;\cf1\b0\par
+           \cf3\b break\cf4 ;\cf1\b0\par
+           \cf3\b case\cf1\b0  \cf7 2\cf4\b :\cf1\b0  \cf6 //28\par
+\cf1                 contador \cf4\b =\cf1\b0  \cf7 31\cf1  \cf4\b +\cf1\b0  dia\cf4\b ;\cf1\b0\par
+           \cf3\b break\cf4 ;\cf1\b0\par
+           \cf3\b case\cf1\b0  \cf7 3\cf4\b :\cf1\b0  \cf6 //31\par
+\cf1                 contador \cf4\b =\cf1\b0  \cf7 59\cf1  \cf4\b +\cf1\b0  biss \cf4\b +\cf1\b0  dia\cf4\b ;\cf1\b0\par
+           \cf3\b break\cf4 ;\cf1\b0\par
+           \cf3\b case\cf1\b0  \cf7 4\cf4\b :\cf1\b0  \cf6 //30\par
+\cf1                 contador \cf4\b =\cf1\b0  \cf7 90\cf1  \cf4\b +\cf1\b0  biss \cf4\b +\cf1\b0  dia\cf4\b ;\cf1\b0\par
+           \cf3\b break\cf4 ;\cf1\b0\par
+           \cf3\b case\cf1\b0  \cf7 5\cf4\b :\cf1\b0  \cf6 //31\par
+\cf1                 contador \cf4\b =\cf1\b0  \cf7 120\cf1  \cf4\b +\cf1\b0  biss \cf4\b +\cf1\b0  dia\cf4\b ;\cf1\b0\par
+           \cf3\b break\cf4 ;\cf1\b0\par
+           \cf3\b case\cf1\b0  \cf7 6\cf4\b :\cf1\b0  \cf6 //30\par
+\cf1                 contador \cf4\b =\cf1\b0  \cf7 151\cf1  \cf4\b +\cf1\b0  biss \cf4\b +\cf1\b0  dia\cf4\b ;\cf1\b0\par
+           \cf3\b break\cf4 ;\cf1\b0\par
+           \cf3\b case\cf1\b0  \cf7 7\cf4\b :\cf1\b0  \cf6 //31\par
+\cf1                 contador \cf4\b =\cf1\b0  \cf7 181\cf1  \cf4\b +\cf1\b0  biss \cf4\b +\cf1\b0  dia\cf4\b ;\cf1\b0\par
+           \cf3\b break\cf4 ;\cf1\b0\par
+           \cf3\b case\cf1\b0  \cf7 8\cf4\b :\cf1\b0  \cf6 //31\par
+\cf1                 contador \cf4\b =\cf1\b0  \cf7 212\cf1  \cf4\b +\cf1\b0  biss \cf4\b +\cf1\b0  dia\cf4\b ;\cf1\b0\par
+           \cf3\b break\cf4 ;\cf1\b0\par
+           \cf3\b case\cf1\b0  \cf7 9\cf4\b :\cf1\b0  \cf6 //30\par
+\cf1                 contador \cf4\b =\cf1\b0  \cf7 243\cf1  \cf4\b +\cf1\b0  biss \cf4\b +\cf1\b0  dia\cf4\b ;\cf1\b0\par
+           \cf3\b break\cf4 ;\cf1\b0\par
+           \cf3\b case\cf1\b0  \cf7 10\cf4\b :\cf1\b0  \cf6 //31\par
+\cf1                 contador \cf4\b =\cf1\b0  \cf7 273\cf1  \cf4\b +\cf1\b0  biss \cf4\b +\cf1\b0  dia\cf4\b ;\cf1\b0\par
+           \cf3\b break\cf4 ;\cf1\b0\par
+           \cf3\b case\cf1\b0  \cf7 11\cf4\b :\cf1\b0  \cf6 //30\par
+\cf1                 contador \cf4\b =\cf1\b0  \cf7 304\cf1  \cf4\b +\cf1\b0  biss \cf4\b +\cf1\b0  dia\cf4\b ;\cf1\b0\par
+           \cf3\b break\cf4 ;\cf1\b0\par
+           \cf3\b case\cf1\b0  \cf7 12\cf4\b :\cf1\b0  \cf6 //31\par
+\cf1                 contador \cf4\b =\cf1\b0  \cf7 334\cf1  \cf4\b +\cf1\b0  biss \cf4\b +\cf1\b0  dia\cf4\b ;\cf1\b0\par
+           \cf3\b break\cf4 ;\cf1\b0\par
+    \cf4\b\}\cf1\b0\par
+    numdia \cf4\b =\cf1\b0  contador\cf4\b ;\cf1\b0\par
+\cf4\b\}\cf1\b0\par
+\par
+\par
+}
+ 
