@@ -1,7 +1,7 @@
 dia-do-coringa
 ==============
 
-Convert Gregorian Calendar to Ficton Jostei Gardner Calendar
+Convert Gregorian Calendar to Fiction Jostei Gardner Calendar
 
 364 dias representados cada um por uma carta
 52 semanas, uma para cada carta
