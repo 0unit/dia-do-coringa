@@ -2,107 +2,107 @@ package main
 
 import (
 	"bufio"
-	"os"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
 
-func EhAnoBissexto(ano int) bool {
+func ehAnoBissexto(ano int) bool {
 	return (!(ano%4 == 0) && !(ano%100 == 0)) && (!(ano%400 == 0))
 }
 
-func CorrigeDiaFrode(dia int, ano int) int {
+func corrigeDiaFrode(dia int, ano int) int {
 	if dia > 60 {
 		return dia - 60
 	}
 	return dia + 305
 }
 
-func CorrigeDiaFrodeVerificaBissexto(dia int, ano int) int {
-	if (EhAnoBissexto(ano - 1)) {
-		return CorrigeDiaFrode(dia, ano) + 1
+func corrigeDiaFrodeVerificaBissexto(dia int, ano int) int {
+	if ehAnoBissexto(ano - 1) {
+		return corrigeDiaFrode(dia, ano) + 1
 	}
-	return CorrigeDiaFrode(dia, ano)
+	return corrigeDiaFrode(dia, ano)
 }
 
-func CorrigeAnoFrode(ano int) int {
+func corrigeAnoFrode(ano int) int {
 	return ano - 1790
 }
 
-func NaipeAnoFrode(ano int) int {
-	return (CorrigeAnoFrode(ano) / 13) % 4
+func naipeAnoFrode(ano int) int {
+	return (corrigeAnoFrode(ano) / 13) % 4
 }
 
-func CartaAnoFrode(ano int) int {
-	return CorrigeAnoFrode(ano) % 13
+func cartaAnoFrode(ano int) int {
+	return corrigeAnoFrode(ano) % 13
 }
 
-func IntAnoBissexto(ano int) int {
-	if (EhAnoBissexto(ano)) {
+func intAnoBissexto(ano int) int {
+	if ehAnoBissexto(ano) {
 		return 1
 	}
 	return 0
 }
 
-func EstacoesFrode(dia int, ano int) int {
-	biss := IntAnoBissexto(ano - 1)
-	if (dia <= (62 - biss)) {
+func estacoesFrode(dia int, ano int) int {
+	biss := intAnoBissexto(ano - 1)
+	if dia <= (62 - biss) {
 		return 1
 	}
-	if (dia <= (154 - biss)) {
+	if dia <= (154 - biss) {
 		return 2
 	}
-	if (dia <= (247 - biss)) {
+	if dia <= (247 - biss) {
 		return 3
 	}
-	if (dia <= (338 - biss)) {
+	if dia <= (338 - biss) {
 		return 0
 	}
-	if (dia <= (367 - biss)) {
+	if dia <= (367 - biss) {
 		return 1
 	}
 	return 1 //HIRO tá errado
 }
 
-func Mes(dia int) int {
+func mesNumeral(dia int) int {
 	return ((dia - 1) / 28) % 13
 }
 
-func NaipeSemanaFrode(dia int) int {
+func naipeSemanaFrode(dia int) int {
 	return ((dia / 7) / 13) % 4
 }
 
-func CartaSemanaFrode(dia int) int {
+func cartaSemanaFrode(dia int) int {
 	return (dia / 7) % 13
 }
 
-func NaipeDiaFrode(dia int) int {
+func naipeDiaFrode(dia int) int {
 	return ((dia - 1) / 13) % 4 // dia decrementando por causa da natureza da array de char
 }
 
-func CartaDiaFrode(dia int) int {
+func cartaDiaFrode(dia int) int {
 	return (dia - 1) % 13 // dia decrementando por causa da natureza da array de char
 }
 
-func EhDataValida(dia int, mes int, ano int) bool {
+func ehDataValida(dia int, mes int, ano int) bool {
 	return !((dia < 1) ||
 		((mes < 1) || (mes > 12)) ||
 		((ano < 1790) || (ano > 9999)) ||
-		(((mes == 1) || (mes == 3) || (mes == 5) || (mes == 7) || (mes == 8) || (mes == 10 ) || (mes == 12)) && (dia > 31)) ||
+		(((mes == 1) || (mes == 3) || (mes == 5) || (mes == 7) || (mes == 8) || (mes == 10) || (mes == 12)) && (dia > 31)) ||
 		(((mes == 4) || (mes == 6) || (mes == 9) || (mes == 11)) && (dia > 30)) ||
-		(((mes == 2) && !EhAnoBissexto(ano)) && (dia > 29)) || ((mes == 2) && EhAnoBissexto(ano)) && (dia > 28))
+		(((mes == 2) && !ehAnoBissexto(ano)) && (dia > 29)) || ((mes == 2) && ehAnoBissexto(ano)) && (dia > 28))
 }
 
-func DiaDoAno(dia int, mes int, ano int) int {
-	if !EhDataValida(dia, mes, ano) {
+func diaDoAno(dia int, mes int, ano int) int {
+	if !ehDataValida(dia, mes, ano) {
 		return 0
 	}
-	return ContaPorMes(dia, mes, ano)
+	return contaPorMes(dia, mes, ano)
 }
 
-func ContaPorMes(dia int, mes int, ano int) int {
-	biss := IntAnoBissexto(ano)
+func contaPorMes(dia int, mes int, ano int) int {
+	biss := intAnoBissexto(ano)
 	switch mes {
 	case 1:
 		return dia
@@ -135,47 +135,47 @@ func ContaPorMes(dia int, mes int, ano int) int {
 func FrodeSimples(dia int, mes int, ano int) string { //RECEBE DATA ORIGINAL
 	cartas := [...]string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "JO"}
 	naipes := [...]string{"O", "P", "C", "E"}
-	numerodedia := CorrigeDiaFrode(DiaDoAno(dia, mes, ano), ano)
+	numerodedia := corrigeDiaFrode(diaDoAno(dia, mes, ano), ano)
 
-	var s_dia = ""
-	if (numerodedia < 365) {
-		s_dia = cartas[CartaDiaFrode(numerodedia)] + naipes[NaipeDiaFrode(numerodedia)]
+	var sDia = ""
+	if numerodedia < 365 {
+		sDia = cartas[cartaDiaFrode(numerodedia)] + naipes[naipeDiaFrode(numerodedia)]
 	}
-	s_dia = cartas[13]
+	sDia = cartas[13]
 
-	s_semana := cartas[CartaSemanaFrode(numerodedia)] + naipes[NaipeSemanaFrode(numerodedia)]
-	s_mes := cartas[Mes(numerodedia)] + naipes[EstacoesFrode(dia, ano)]
+	sSemana := cartas[cartaSemanaFrode(numerodedia)] + naipes[naipeSemanaFrode(numerodedia)]
+	sMes := cartas[mesNumeral(numerodedia)] + naipes[estacoesFrode(dia, ano)]
 
-	s_ano := cartas[CartaAnoFrode(ano)] + naipes[NaipeAnoFrode(ano)]
-	s_frode := s_dia + s_semana + s_mes + s_ano
+	sAno := cartas[cartaAnoFrode(ano)] + naipes[naipeAnoFrode(ano)]
+	sFrode := sDia + sSemana + sMes + sAno
 
-	return s_frode //formato de retorno dia semana mes ano sempre numero/naipe
+	return sFrode //formato de retorno dia semana mes ano sempre numero/naipe
 }
 
 func ImprimeCalendarioFrode(dia int, mes int, ano int) { //RECEBE DATA ORIGINAL
 	cartas := [...]string{"de As", "de Dois", "de Tres", "de Quatro", "de Cinco",
-						  "de Seis", "de Sete", "de Oito", "de Nove", "de Dez",
-						  "de Valete", "de Dama", "de Rei", "do Curinga"}
+		"de Seis", "de Sete", "de Oito", "de Nove", "de Dez",
+		"de Valete", "de Dama", "de Rei", "do Curinga"}
 	naipes := [...]string{" de ouros", " de paus", " de copas", " de espadas"}
 
-	numerodedia := CorrigeDiaFrode(DiaDoAno(dia, mes, ano), ano)
+	numerodedia := corrigeDiaFrode(diaDoAno(dia, mes, ano), ano)
 
 	fmt.Println("\n\tCalendario de Paciencia de Frode")
-	fmt.Println("\n\t---------------------------------\n")
+	fmt.Println("\t---------------------------------")
 
-	if (numerodedia < 365) { //imprime dias
-		fmt.Println("\tDia de " + cartas[CartaDiaFrode(numerodedia)] + naipes[NaipeDiaFrode(numerodedia)])
+	if numerodedia < 365 { //imprime dias
+		fmt.Println("\tDia de " + cartas[cartaDiaFrode(numerodedia)] + naipes[naipeDiaFrode(numerodedia)])
 	}
-	if (numerodedia == 365) { //excecão a regra pelos dias do curinga
+	if numerodedia == 365 { //excecão a regra pelos dias do curinga
 		fmt.Println("\tDia " + cartas[13])
 	}
-	if (numerodedia == 366) {
+	if numerodedia == 366 {
 		fmt.Println("\tDuplo dia " + cartas[13])
 	}
 
-	fmt.Println("\tSemana de " + cartas[CartaSemanaFrode(numerodedia)] + naipes[NaipeSemanaFrode(numerodedia)])
-	fmt.Println("\tMes de " + cartas[Mes(numerodedia)] + " estacao" + naipes[EstacoesFrode(dia, ano)])
-	fmt.Println("\tAno de " + cartas[CartaAnoFrode(ano)] + naipes[NaipeAnoFrode(ano)])
+	fmt.Println("\tSemana de " + cartas[cartaSemanaFrode(numerodedia)] + naipes[naipeSemanaFrode(numerodedia)])
+	fmt.Println("\tMes de " + cartas[mesNumeral(numerodedia)] + " estacao" + naipes[estacoesFrode(dia, ano)])
+	fmt.Println("\tAno de " + cartas[cartaAnoFrode(ano)] + naipes[naipeAnoFrode(ano)])
 	fmt.Println("\n\t" + strconv.Itoa(dia) + "/" + strconv.Itoa(mes) + "/" + strconv.Itoa(ano) + " e dia numero " + strconv.Itoa(numerodedia))
 }
 
@@ -190,6 +190,6 @@ func main() {
 	dia, _ := strconv.Atoi(args[0])
 	mes, _ := strconv.Atoi(args[1])
 	ano, _ := strconv.Atoi(args[2])
-	ImprimeCalendarioFrode(dia, mes, ano);
-	fmt.Println("\n\tSimples -- " + FrodeSimples(dia, mes, ano));
+	ImprimeCalendarioFrode(dia, mes, ano)
+	fmt.Println("\n\tSimples -- " + FrodeSimples(dia, mes, ano))
 }
