@@ -9,10 +9,10 @@ import (
 )
 
 func ehAnoBissexto(ano int) bool {
-	return (!(ano%4 == 0) && !(ano%100 == 0)) && (!(ano%400 == 0))
+	return (ano%400 == 0) || (ano%4 == 0 && ano%100 != 0)
 }
 
-func corrigeDiaFrode(dia int, ano int) int {
+func corrigeDiaFrode(dia int) int {
 	if dia > 60 {
 		return dia - 60
 	}
@@ -20,13 +20,18 @@ func corrigeDiaFrode(dia int, ano int) int {
 }
 
 func corrigeDiaFrodeVerificaBissexto(dia int, ano int) int {
-	if ehAnoBissexto(ano - 1) {
-		return corrigeDiaFrode(dia, ano) + 1
+	anoAnteriorEhBissexto := ehAnoBissexto(ano)
+	if anoAnteriorEhBissexto {
+		return corrigeDiaFrode(dia)
 	}
-	return corrigeDiaFrode(dia, ano)
+	return corrigeDiaFrode(dia + 1)
 }
 
 func corrigeAnoFrode(ano int) int {
+	if ano < 1790 {
+		return 1790 - ano
+	}
+
 	return ano - 1790
 }
 
@@ -62,11 +67,11 @@ func estacoesFrode(dia int, ano int) int {
 	if dia <= (367 - biss) {
 		return 1
 	}
-	return 1 //HIRO tá errado
+	return 1
 }
 
 func mesNumeral(dia int) int {
-	return ((dia - 1) / 28) % 13
+	return (dia / 28) % 13
 }
 
 func naipeSemanaFrode(dia int) int {
@@ -78,11 +83,11 @@ func cartaSemanaFrode(dia int) int {
 }
 
 func naipeDiaFrode(dia int) int {
-	return ((dia - 1) / 13) % 4 // dia decrementando por causa da natureza da array de char
+	return ((dia - 1) / 13) % 4
 }
 
 func cartaDiaFrode(dia int) int {
-	return (dia - 1) % 13 // dia decrementando por causa da natureza da array de char
+	return (dia - 1) % 13
 }
 
 func ehDataValida(dia int, mes int, ano int) bool {
@@ -91,7 +96,8 @@ func ehDataValida(dia int, mes int, ano int) bool {
 		((ano < 1790) || (ano > 9999)) ||
 		(((mes == 1) || (mes == 3) || (mes == 5) || (mes == 7) || (mes == 8) || (mes == 10) || (mes == 12)) && (dia > 31)) ||
 		(((mes == 4) || (mes == 6) || (mes == 9) || (mes == 11)) && (dia > 30)) ||
-		(((mes == 2) && !ehAnoBissexto(ano)) && (dia > 29)) || ((mes == 2) && ehAnoBissexto(ano)) && (dia > 28))
+		(((mes == 2) && ehAnoBissexto(ano)) && (dia > 29)) ||
+		((mes == 2) && !ehAnoBissexto(ano)) && (dia > 28))
 }
 
 func diaDoAno(dia int, mes int, ano int) int {
@@ -132,64 +138,105 @@ func contaPorMes(dia int, mes int, ano int) int {
 	return 0
 }
 
-func FrodeSimples(dia int, mes int, ano int) string { //RECEBE DATA ORIGINAL
-	cartas := [...]string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "JO"}
-	naipes := [...]string{"O", "P", "C", "E"}
-	numerodedia := corrigeDiaFrode(diaDoAno(dia, mes, ano), ano)
+func FrodeSimples(dia int, mes int, ano int) string {
+	if !ehDataValida(dia, mes, ano) {
+		return ""
+	}
 
-	var sDia = ""
+	cartas := [...]string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "Jo", "Jd"}
+	naipes := [...]string{"O", "P", "C", "E"}
+	numerodedia := corrigeDiaFrodeVerificaBissexto(diaDoAno(dia, mes, ano), ano)
+
+	sDia := cartas[13]
+	if numerodedia == 366 {
+		sDia = cartas[14]
+	}
+
 	if numerodedia < 365 {
 		sDia = cartas[cartaDiaFrode(numerodedia)] + naipes[naipeDiaFrode(numerodedia)]
 	}
-	sDia = cartas[13]
 
 	sSemana := cartas[cartaSemanaFrode(numerodedia)] + naipes[naipeSemanaFrode(numerodedia)]
 	sMes := cartas[mesNumeral(numerodedia)] + naipes[estacoesFrode(dia, ano)]
-
 	sAno := cartas[cartaAnoFrode(ano)] + naipes[naipeAnoFrode(ano)]
 	sFrode := sDia + sSemana + sMes + sAno
 
-	return sFrode //formato de retorno dia semana mes ano sempre numero/naipe
+	return sFrode
 }
 
-func ImprimeCalendarioFrode(dia int, mes int, ano int) { //RECEBE DATA ORIGINAL
+func Frode(dia int, mes int, ano int) string {
+	if !ehDataValida(dia, mes, ano) {
+		return ""
+	}
+
 	cartas := [...]string{"de As", "de Dois", "de Tres", "de Quatro", "de Cinco",
 		"de Seis", "de Sete", "de Oito", "de Nove", "de Dez",
 		"de Valete", "de Dama", "de Rei", "do Curinga"}
 	naipes := [...]string{" de ouros", " de paus", " de copas", " de espadas"}
 
-	numerodedia := corrigeDiaFrode(diaDoAno(dia, mes, ano), ano)
+	numerodedia := corrigeDiaFrodeVerificaBissexto(diaDoAno(dia, mes, ano), ano)
 
-	fmt.Println("\n\tCalendario de Paciencia de Frode")
-	fmt.Println("\t---------------------------------")
+	saida := ""
 
-	if numerodedia < 365 { //imprime dias
-		fmt.Println("\tDia de " + cartas[cartaDiaFrode(numerodedia)] + naipes[naipeDiaFrode(numerodedia)])
+	if numerodedia < 365 {
+		saida += "\n\tDia de " + cartas[cartaDiaFrode(numerodedia)] + naipes[naipeDiaFrode(numerodedia)]
 	}
-	if numerodedia == 365 { //excecão a regra pelos dias do curinga
-		fmt.Println("\tDia " + cartas[13])
+	if numerodedia == 365 {
+		saida += "\n\tDia " + cartas[13]
 	}
 	if numerodedia == 366 {
-		fmt.Println("\tDuplo dia " + cartas[13])
+		saida += "\n\tDuplo dia " + cartas[13]
 	}
 
-	fmt.Println("\tSemana de " + cartas[cartaSemanaFrode(numerodedia)] + naipes[naipeSemanaFrode(numerodedia)])
-	fmt.Println("\tMes de " + cartas[mesNumeral(numerodedia)] + " estacao" + naipes[estacoesFrode(dia, ano)])
-	fmt.Println("\tAno de " + cartas[cartaAnoFrode(ano)] + naipes[naipeAnoFrode(ano)])
-	fmt.Println("\n\t" + strconv.Itoa(dia) + "/" + strconv.Itoa(mes) + "/" + strconv.Itoa(ano) + " e dia numero " + strconv.Itoa(numerodedia))
+	saida += "\n\tSemana " + cartas[cartaSemanaFrode(numerodedia)] + naipes[naipeSemanaFrode(numerodedia)]
+	saida += "\n\tMes de " + cartas[mesNumeral(numerodedia)] + " estacao" + naipes[estacoesFrode(dia, ano)]
+	saida += "\n\tAno de " + cartas[cartaAnoFrode(ano)] + naipes[naipeAnoFrode(ano)]
+	saida += "\n\t" + strconv.Itoa(dia) + "/" + strconv.Itoa(mes) + "/" + strconv.Itoa(ano) + " e dia numero " + strconv.Itoa(numerodedia)
+
+	return saida
+}
+
+func cabecalhoInicial() {
+	fmt.Println("Entre com dia mes e ano (separados por enter) e precione ctrl-c")
+	fmt.Println("\n\tEntre com dia mes e ano (separados por espaco):")
+}
+
+func lerEntradaUsuario() string {
+	reader := bufio.NewReader(os.Stdin)
+	text, _ := reader.ReadString('\n')
+
+	return text
+}
+
+func exibirDataFrode(dia int, mes int, ano int) {
+	fmt.Println("\n\tCalendario de Paciencia de Frode")
+	fmt.Println("\t---------------------------------")
+	fmt.Println(Frode(dia, mes, ano))
+	fmt.Println("\n\tSimples -- " + FrodeSimples(dia, mes, ano))
+}
+
+type dataSimples struct {
+	dia int
+	mes int
+	ano int
+}
+
+func limparEntrada(entrada string) dataSimples {
+	novaEntrada := strings.Replace(entrada, "\n", " ", -1)
+	args := strings.Split(novaEntrada, " ")
+	if len(args) >= 3 {
+		dia, _ := strconv.Atoi(args[0])
+		mes, _ := strconv.Atoi(args[1])
+		ano, _ := strconv.Atoi(args[2])
+		return dataSimples{dia, mes, ano}
+	}
+
+	return dataSimples{0, 0, 0}
 }
 
 func main() {
-	fmt.Println("Entre com dia mes e ano (separados por enter) e precione ctrl-c")
-	fmt.Println("\n\tEntre com dia mes e ano (separados por espaco):")
-	reader := bufio.NewReader(os.Stdin)
-	text, _ := reader.ReadString('\n')
-	fmt.Println(text)
-	newText := strings.Replace(text, "\n", " ", -1)
-	args := strings.Split(newText, " ")
-	dia, _ := strconv.Atoi(args[0])
-	mes, _ := strconv.Atoi(args[1])
-	ano, _ := strconv.Atoi(args[2])
-	ImprimeCalendarioFrode(dia, mes, ano)
-	fmt.Println("\n\tSimples -- " + FrodeSimples(dia, mes, ano))
+	cabecalhoInicial()
+	entrada := lerEntradaUsuario()
+	entradaLimpa := limparEntrada(entrada)
+	exibirDataFrode(entradaLimpa.dia, entradaLimpa.mes, entradaLimpa.ano)
 }
